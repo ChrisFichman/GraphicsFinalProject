@@ -382,30 +382,35 @@ static void xWing(	double x, double y, double z,
 	glColor3f(0.745,0.745,0.745);
 	glBegin(GL_QUADS);		
 		//Top
-		glVertex3d((len_tip + nose), 0.0, -wid_tip); 			//v0
+		glNormal3f(1/(len_tip), 1/(wid_tip+0.08),0);
 		glVertex3d((len_tip + nose), 0.0, wid_tip);				//v1
-		glVertex3d(nose, (wid_tip + 0.08), (wid_tip+ 0.08));	//v2
+		glVertex3d((len_tip + nose), 0.0, -wid_tip); 			//v0
 		glVertex3d(nose, (wid_tip + 0.08), -(wid_tip+ 0.08)); 	//v3
-		
+		glVertex3d(nose, (wid_tip + 0.08), (wid_tip+ 0.08));	//v2
+				
 		//Bottom
+		glNormal3f(1/(len_tip), -1/(wid_tip+0.08),0);
+		glVertex3d((len_tip + nose), 0.0, -wid_tip); 			//v0		
 		glVertex3d((len_tip + nose), 0.0, wid_tip);				//v1
-		glVertex3d((len_tip + nose), 0.0, -wid_tip); 			//v0
-		glVertex3d(nose, (-wid_tip-0.08), -(wid_tip+ 0.08));	//v5
 		glVertex3d(nose, (-wid_tip-0.08), (wid_tip+ 0.08));		//v4
+		glVertex3d(nose, (-wid_tip-0.08), -(wid_tip+ 0.08));	//v5
 
-		//Right
+		//Left
+		glNormal3f(1/(len_tip), 0, 1/0.08);
 		glVertex3d((len_tip + nose), 0.0, wid_tip);				//v1
 		glVertex3d((len_tip + nose), 0.0, wid_tip);				//v1
 		glVertex3d(nose, (-wid_tip-0.08), (wid_tip+ 0.08));		//v4
 		glVertex3d(nose, (wid_tip + 0.08), (wid_tip+ 0.08));	//v2
 		
-		//Left
+		//Right
+		glNormal3f(1/(len_tip), 0, -1/0.08);
 		glVertex3d((len_tip + nose), 0.0, -wid_tip); 			//v0
 		glVertex3d((len_tip + nose), 0.0, -wid_tip); 			//v0
+		glVertex3d(nose, (-wid_tip-0.08), -(wid_tip+ 0.08));	//v5		
 		glVertex3d(nose, (wid_tip + 0.08), -(wid_tip+ 0.08)); 	//v3
-		glVertex3d(nose, (-wid_tip-0.08), -(wid_tip+ 0.08));	//v5
 
 		//Back
+		glNormal3f(-1,0,0);
 		glVertex3d(nose, (wid_tip + 0.08), (wid_tip+ 0.08));	//v2
 		glVertex3d(nose, (wid_tip + 0.08), -(wid_tip+ 0.08)); 	//v3
 		glVertex3d(nose, (-wid_tip-0.08), (wid_tip+ 0.08));		//v4
@@ -416,24 +421,28 @@ static void xWing(	double x, double y, double z,
 	glColor3f(0.70,0.70,0.70);
 	glBegin(GL_QUADS);
 		//Top
+		glNormal3f(1/nose,-1/(wid_tip-wid_base),0);
 		glVertex3d(nose, wid_tip, wid_tip); 	//v0
 		glVertex3d(nose, wid_tip, -wid_tip);	//v1
 		glVertex3d(0, wid_base, -wid_base);		//v2
 		glVertex3d(0, wid_base, wid_base); 		//v3
 		
 		//Bottom
+		glNormal3f(1/nose,1/(wid_tip-wid_base),0);
 		glVertex3d(0, -wid_base, -wid_base);	//v4
 		glVertex3d(0, -wid_base, wid_base); 	//v5
 		glVertex3d(nose, -wid_tip, wid_tip);	//v6
 		glVertex3d(nose, -wid_tip, -wid_tip);	//v7
 		
 		//Right
+		glNormal3f(1/nose,0,1/(wid_tip-wid_base));
 		glVertex3d(nose, wid_tip, -wid_tip);	//v1
 		glVertex3d(nose, -wid_tip, -wid_tip);	//v7
 		glVertex3d(0, -wid_base, -wid_base);	//v4
 		glVertex3d(0, wid_base, -wid_base);		//v2
 
 		//Left
+		glNormal3f(1/nose,0,-1/(wid_tip-wid_base));
 		glVertex3d(0, wid_base, wid_base); 		//v3
 		glVertex3d(0, -wid_base, wid_base); 	//v5
 		glVertex3d(nose, -wid_tip, wid_tip);	//v6
@@ -460,6 +469,7 @@ static void xWing(	double x, double y, double z,
 	glColor3f(0,0,1);
 	glBegin(GL_QUADS);
 		//Top
+		glNormal3f(1/2.5, 1/0.5, 0);
 		glVertex3d(0, 0.5, -wid_base); 			//v0
 		glVertex3d(0, 0.5, wid_base);			//v1
 		glVertex3d(2.5, 0, 0.225);					//v2
@@ -472,12 +482,14 @@ static void xWing(	double x, double y, double z,
 		glVertex3d(2.5, 0, 0.225);			//V2
 
 		//Right
+		glNormal3f(1/2.5, 0, -1/(wid_base-0.225));
 		glVertex3d(0, 0.5, -wid_base); 			//v0
 		glVertex3d(2.5, 0, -0.225);				//v3
 		glVertex3d(0, 0, -wid_base); 			//V5	
 		glVertex3d(0, 0.5, -wid_base); 			//v0
 		
 		//Left
+		glNormal3f(1/2.5, 0, 1/(wid_base-0.225));
 		glVertex3d(0, 0.5, wid_base);			//v1
 		glVertex3d(0, 0, wid_base);				//V4
 		glVertex3d(2.5, 0, 0.225);					//v2
