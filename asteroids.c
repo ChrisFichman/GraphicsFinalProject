@@ -2,20 +2,15 @@
 #include "CSCIx229.h"
 #include "util.h"
 #define N 20
-#define SPREAD 40
+#define SPREAD 30
 
-typedef struct APoints{
-	double x;
-	double y;
-	double z;
-}APoints;
 
 typedef struct  Asteroid{
 	double r;
 	double x;
 	double y;
 	double z;
-	APoints points[2592];
+	double rad[2592];
 } Asteroid;
 
 typedef struct AField{
@@ -27,18 +22,12 @@ void initAPoint(Asteroid asteroid){
 	int i_1 = 1;
 	int i;
 	
-	asteroid.points[i_0].x = randRange(0.2, 0.6);
-	asteroid.points[i_0].y = randRange(0.2, 0.6);
-	asteroid.points[i_0].z = randRange(0.2, 0.6);
+	asteroid.rad[i_0] = randRange(0.8, 1);
 	
-	asteroid.points[i_1].x = randRange(0.2, 0.6);
-	asteroid.points[i_1].y = randRange(0.2, 0.6);
-	asteroid.points[i_1].z = randRange(0.2, 0.6);
+	asteroid.rad[i_1] = randRange(0.8, 1);
 	
 	for(i = 2; i<2592; i++){
-		asteroid.points[i].x = (randRange(0.2, 0.6)+asteroid.points[i_0].x+asteroid.points[i_1].x)/3;
-		asteroid.points[i].y = (randRange(0.2, 0.6)+asteroid.points[i_0].y+asteroid.points[i_1].y)/3;
-		asteroid.points[i].z = (randRange(0.2, 0.6)+asteroid.points[i_0].z+asteroid.points[i_1].z)/3;
+		asteroid.rad[i] = (randRange(0.8, 1)+asteroid.rad[i_1]+asteroid.rad[i_0])/3;
 		i_0++;
 		i_1++;
 	}
@@ -70,15 +59,24 @@ void drawAsteroids(AField *field, int texture, int i){
 	  glBegin(GL_QUAD_STRIP);
 		  for (th=0;th<=360;th+=5)
 		  {
-				x = -Sin(th)*Cos(ph)+(field->asteroids[i].points[j].x);
-				y =  Cos(th)*Cos(ph)+(field->asteroids[i].points[j].y);
-				z =          Sin(ph)+(field->asteroids[i].points[j].z);
+				x = -Sin(th)*Cos(ph)*(field->asteroids[i].rad[j]);
+				y =  Cos(th)*Cos(ph)*(field->asteroids[i].rad[j]);
+				z =          Sin(ph)*(field->asteroids[i].rad[j]);
 				
 				glNormal3f(x,y,z);
 				glTexCoord2d(th/360.0,ph/180.0+0.5);
 				glVertex3f(x,y,z);
+								
+				x = -Sin(th)*Cos(ph+5)*(field->asteroids[i].rad[j+1]);
+				y =  Cos(th)*Cos(ph+5)*(field->asteroids[i].rad[j+1]);
+				z =          Sin(ph+5)*(field->asteroids[i].rad[j+1]);
 				
-				j++;
+				glNormal3f(x,y,z);
+				glTexCoord2d(th/360.0,(ph+5)/180.0+0.5);
+				glVertex3f(x,y,z);
+
+				
+				j+=2;
 		  }
 	  glEnd();
 	}

@@ -66,7 +66,8 @@ static void asteroidField(int n, int spread)
 		glScaled(field.asteroids[k].r, field.asteroids[k].r, field.asteroids[k].r);
 		
 		if (k>0 && light) glEnable(GL_LIGHTING); //  Lighting for planets
-
+		
+		//sphere(textures.asteroid, 1);
 		drawAsteroids(&field, textures.asteroid, k);
 		
 		glPopMatrix();
