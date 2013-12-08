@@ -1,5 +1,5 @@
 #  List of all programs to be built
-EX= finalChrisFichman
+EX=finalChrisFichman
 
 #  Libraries - Linux
 LIBS=-lglut -lGLU -lGL -lm
