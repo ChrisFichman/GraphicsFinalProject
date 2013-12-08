@@ -212,7 +212,15 @@ static void xWingFoils(int x_foils, double wingspan){
 			glEnd();
 			
 			//Draw Engines
-			cylinder(-0.10,x_y*(0.01+intakeRadius)+trans,x_z*0.7, intakeLength,intakeRadius,intakeRadius, 0);
+			cylinder(-0.10,x_y*(0.08+intakeRadius)+trans,x_z*0.7, 
+						intakeLength,intakeRadius,intakeRadius, 0);
+			cylinder(-0.10+intakeLength,x_y*(0.39+outputRadius)+trans,x_z*0.70, 
+						outputLength,outputRadius,outputRadius, 0);
+			//Draw Lazers
+			cylinder(-0.10,x_y*(0.10+r_coil)+trans,x_z*(wingspan-0.12), 
+						l_coil,r_coil,r_coil, 0);
+			cylinder(-0.10,x_y*(0.15+r_focus)+trans,x_z*(wingspan-0.12), 
+						l_focus,r_focus,r_focus, 0);
 		}
 	}
 }
@@ -442,8 +450,8 @@ static void xWing(	double x, double y, double z,
 		glNormal3f(-1,0,0);
 		glVertex3d(nose, (wid_tip + 0.08), (wid_tip+ 0.08));	//v2
 		glVertex3d(nose, (wid_tip + 0.08), -(wid_tip+ 0.08)); 	//v3
-		glVertex3d(nose, (-wid_tip-0.08), (wid_tip+ 0.08));		//v4
 		glVertex3d(nose, (-wid_tip-0.08), -(wid_tip+ 0.08));	//v5
+		glVertex3d(nose, (-wid_tip-0.08), (wid_tip+ 0.08));		//v4
 		glEnd();
 		
 	// Draw Fusolage

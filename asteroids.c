@@ -4,13 +4,12 @@
 #define N 20
 #define SPREAD 30
 
-
-typedef struct  Asteroid{
+typedef struct Asteroid{
 	double r;
 	double x;
 	double y;
 	double z;
-	double rad[1332];
+	double rad[19][38];
 	double rot;
 } Asteroid;
 
@@ -19,18 +18,18 @@ typedef struct AField{
 }AField;
 
 void initAPoint(Asteroid *asteroid){
-	int i_0 = 0;
-	int i_1 = 1;
 	int i;
+	int j;
+	double current;
 	
-	asteroid->rad[i_0] = randRange(0.8, 1.0);
-	
-	asteroid->rad[i_1] = randRange(0.8, 1.0);
-	
-	for(i = 2; i<1332; i++){
-		asteroid->rad[i] = (randRange(0.8, 1)+asteroid->rad[i_1]+asteroid->rad[i_0])/3;
-		i_0++;
-		i_1++;
+	for(i = 0; i<10; i++){
+		asteroid->rad[i][0] = randRange(0.8, 1.0);
+		asteroid->rad[i][1] = randRange(0.8, 1.0);
+		
+		for(j = 2; j<19; j++){
+			current = randRange(0.8, 1.0);
+			asteroid->rad[i][j] = (current+asteroid->rad[i][j-1]+asteroid->rad[i][j-2])/3;
+		}
 	}
 }
 void initAField(AField *field){
@@ -40,13 +39,13 @@ void initAField(AField *field){
 		field->asteroids[i].x = randRange(-SPREAD, SPREAD);
 		field->asteroids[i].y = randRange(-SPREAD, SPREAD);
 		field->asteroids[i].z = randRange(-SPREAD, SPREAD);
-		field->asteroids[i].rot = randRange(60, 90);
+		field->asteroids[i].rot = randRange(0, 90);
 		initAPoint(&(field->asteroids[i]));
 	}
 }
 
 void drawAsteroid(AField *field, int texture, int i){
-	int th,ph,j;
+	int th,ph,j,k;
 	double x,y,z;
 	//  Set texture 
 	if(texture != 0){
@@ -55,31 +54,50 @@ void drawAsteroid(AField *field, int texture, int i){
 	}
 	//  Latitude bands
 	glColor3f(1,1,1);
+	
 	j = 0;
-	for (ph=-90;ph<90;ph+=10)
+	for (ph=-90;ph<90;ph+=20)
 	{
-	  glBegin(GL_QUAD_STRIP);
-		  for (th=0;th<=360;th+=10)
-		  {
-				x = -Sin(th)*Cos(ph)*(field->asteroids[i].rad[j]);
-				y =  Cos(th)*Cos(ph)*(field->asteroids[i].rad[j]);
-				z =          Sin(ph)*(field->asteroids[i].rad[j]);
+		k = 0;
+		glBegin(GL_QUAD_STRIP);
+			for (th=0;th<=360;th+=20)
+			{
+				x = -Sin(th)*Cos(ph)*(field->asteroids[i].rad[j][k]);
+				y =  Cos(th)*Cos(ph)*(field->asteroids[i].rad[j][k]);
+				z =          Sin(ph)*(field->asteroids[i].rad[j][k]);
 				
 				glNormal3f(x,y,z);
 				glTexCoord2d(th/360.0,ph/180.0+0.5);
 				glVertex3f(x,y,z);
 								
-				x = -Sin(th)*Cos(ph+10)*(field->asteroids[i].rad[j+1]);
-				y =  Cos(th)*Cos(ph+10)*(field->asteroids[i].rad[j+1]);
-				z =          Sin(ph+10)*(field->asteroids[i].rad[j+1]);
+				x = -Sin(th)*Cos(ph+20)*(field->asteroids[i].rad[j+1][k]);
+				y =  Cos(th)*Cos(ph+20)*(field->asteroids[i].rad[j+1][k]);
+				z =          Sin(ph+20)*(field->asteroids[i].rad[j+1][k]);
 				
 				glNormal3f(x,y,z);
-				glTexCoord2d(th/360.0,(ph+5)/180.0+0.5);
+				glTexCoord2d(th/360.0,(ph+20)/180.0+0.5);
 				glVertex3f(x,y,z);
 				
-				j+=2;
-		  }
-	  glEnd();
+				k++;
+			}
+			x = -Sin(th)*Cos(ph)*(field->asteroids[i].rad[0][0]);
+			y =  Cos(th)*Cos(ph)*(field->asteroids[i].rad[0][0]);
+			z =          Sin(ph)*(field->asteroids[i].rad[0][0]);
+
+			glNormal3f(x,y,z);
+			glTexCoord2d(th/360.0,ph/180.0+0.5);
+			glVertex3f(x,y,z);
+						
+			x = -Sin(th)*Cos(ph+20)*(field->asteroids[i].rad[1][0]);
+			y =  Cos(th)*Cos(ph+20)*(field->asteroids[i].rad[1][0]);
+			z =          Sin(ph+20)*(field->asteroids[i].rad[1][0]);
+
+			glNormal3f(x,y,z);
+			glTexCoord2d(th/360.0,(ph+20)/180.0+0.5);
+			glVertex3f(x,y,z);
+			
+			j++;
+		glEnd();
 	}
 	glDisable(GL_TEXTURE_2D);
 
