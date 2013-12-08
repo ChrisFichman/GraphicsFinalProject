@@ -22,8 +22,7 @@
 //~ 10) If I have time, allow user control of a ship.
 #include "CSCIx229.h"
 #include "textures.h"
-#include "util.h"
-#include "asteroids.h"
+#include "asteroids.c"
 #include "wings.h"
 
 int axes=0;       //  Display axes
@@ -68,120 +67,151 @@ static void asteroidField(int n, int spread)
 		
 		if (k>0 && light) glEnable(GL_LIGHTING); //  Lighting for planets
 
-		sphere(textures.asteroid);
+		drawAsteroids(&field, textures.asteroid, k);
 		
 		glPopMatrix();
 	}
 }
-static void xWingFoils(int x_foils, double wingspan, int wing){	
+
+static void xWingFoils(int x_foils, double wingspan){	
 	double x_y;
 	double x_z;
 	double x_offset;
+	double intakeRadius = 0.3;
+	double intakeLength = -1.5;
+	double outputRadius = 0.2;
+	double outputLength = -1;
+	double trans = 0.08;
+	double r_coil = 0.1;
+	double l_coil = -1.1;
+	double r_focus = 0.05;
+	double l_focus = 2.5;
 	
-	if(wing == 0){ //Top Left from front
-		x_y = 1.0;
-		x_z = 1.0;
-		x_offset = 0.1;
-	}else if(wing == 1){ //Bottom Left from front
-		x_y = -1.0;
-		x_z = 1.0;
-		x_offset = -0.1;
-	}else if(wing == 2){ //Bottom Right from front
-		x_y = -1.0;
-		x_z = -1.0;
-		x_offset = -0.1;
-	}else{ //Top Right!
-		x_y = 1.0;
-		x_z = -1.0;
-		x_offset = 0.1;
-	}
 	
-	if(x_foils == 1){
-		glBegin(GL_QUADS);
-		glColor3f(0.8,0,0);			
-			//bottom part of wing (from front)
-			glNormal3f(0,-x_y*1.67,-x_z*0.32);
-			glVertex3d(-0.20, x_y*0.2, x_z*0.35); 	//v0
-			glVertex3d(-1.80, x_y*0.2, x_z*0.35);		//v1
-			glVertex3d(-1.50, x_y*0.80, x_z*wingspan);		//v2
-			glVertex3d(-0.50, x_y*0.80, x_z*wingspan);		//v3
+	int wing;
+	
+	for(wing = 0; wing < 4; wing++){ 
+		if(wing == 0){ //Top Left from front
+			x_y = 1.0;
+			x_z = 1.0;
+			x_offset = 0.1;
+		}else if(wing == 1){ //Bottom Left from front
+			x_y = -1.0;
+			x_z = 1.0;
+			x_offset = -0.1;
+		}else if(wing == 2){ //Bottom Right from front
+			x_y = -1.0;
+			x_z = -1.0;
+			x_offset = -0.1;
+		}else{ //Top Right!
+			x_y = 1.0;
+			x_z = -1.0;
+			x_offset = 0.1;
+		}
+		
+		if(x_foils == 1){
+			glBegin(GL_QUADS);
+			glColor3f(0.8,0,0);			
+				//bottom part of wing (from front)
+				glNormal3f(0,-x_y*1.67,-x_z*0.32);
+				glVertex3d(-0.20, x_y*0.1+trans, x_z*0.35); 	//v0
+				glVertex3d(-1.80, x_y*0.1+trans, x_z*0.35);		//v1
+				glVertex3d(-1.30, x_y*0.80+trans, x_z*wingspan);		//v2
+				glVertex3d(-0.20, x_y*0.80+trans, x_z*wingspan);		//v3
+				
+				//top part of wing (from front)
+				glNormal3f(0,x_y*1.67,x_z*0.32);
+				glVertex3d(-0.20, x_y*0.1+x_offset+trans, x_z*0.35); 	//v0
+				glVertex3d(-1.80, x_y*0.1+x_offset+trans, x_z*0.35);		//v1
+				glVertex3d(-1.30, x_y*0.80+x_offset+trans, x_z*wingspan);		//v2
+				glVertex3d(-0.20, x_y*0.80+x_offset+trans, x_z*wingspan);		//v3
+				
+				//connect parts
+				glColor3f(0,0,0.8);
+				glNormal3f(0,x_y*-0.6,x_z*-3.15);
+				glVertex3d(-0.20, x_y*0.1+x_offset+trans, x_z*0.35); 	//v0
+				glVertex3d(-0.20, x_y*0.1+trans, x_z*0.35); 	//v0
+				glVertex3d(-1.80, x_y*0.1+trans, x_z*0.35);		//v1
+				glVertex3d(-1.80, x_y*0.1+x_offset+trans, x_z*0.35);		//v1
+				
+				glNormal3f(-3.3,x_y*1.67,x_z*0.32);
+				glVertex3d(-1.80, x_y*0.1+x_offset+trans, x_z*0.35);		//v1
+				glVertex3d(-1.80, x_y*0.1+trans, x_z*0.35);		//v1			
+				glVertex3d(-1.30, x_y*0.80+trans, x_z*wingspan);		//v2			
+				glVertex3d(-1.30, x_y*0.80+x_offset+trans, x_z*wingspan);		//v2
+				
+				glNormal3f(0,x_y*0.6,x_z*3.15);	
+				glVertex3d(-1.30, x_y*0.80+x_offset+trans, x_z*wingspan);		//v2
+				glVertex3d(-1.30, x_y*0.80+trans, x_z*wingspan);		//v2
+				glVertex3d(-0.20, x_y*0.80+trans, x_z*wingspan);		//v3
+				glVertex3d(-0.20, x_y*0.80+x_offset+trans, x_z*wingspan);		//v3
+				
+				glNormal3f(1,0,0);
+				glVertex3d(-0.20, x_y*0.80+x_offset+trans, x_z*wingspan);		//v3			
+				glVertex3d(-0.20, x_y*0.80+trans, x_z*wingspan);		//v3			
+				glVertex3d(-0.20, x_y*0.1+trans, x_z*0.35); 	//v0	
+				glVertex3d(-0.20, x_y*0.1+x_offset+trans, x_z*0.35); 	//v0	
+			glEnd();
 			
-			//top part of wing (from front)
-			glNormal3f(0,x_y*1.67,x_z*0.32);
-			glVertex3d(-0.20, x_y*0.2+x_offset, x_z*0.35); 	//v0
-			glVertex3d(-1.80, x_y*0.2+x_offset, x_z*0.35);		//v1
-			glVertex3d(-1.50, x_y*0.80+x_offset, x_z*wingspan);		//v2
-			glVertex3d(-0.50, x_y*0.80+x_offset, x_z*wingspan);		//v3
+			//Draw Engines
+			cylinder(-0.10,x_y*(0.2+intakeRadius)+trans,x_z*0.65, 
+						intakeLength,intakeRadius,intakeRadius, 0);
+			cylinder(-0.10+intakeLength,x_y*(0.5+outputRadius)+trans,x_z*0.65, 
+						outputLength,outputRadius,outputRadius, 0);
 			
-			//connect parts
-			glColor3f(0,0,0.8);
-			glNormal3f(0,x_y*-0.6,x_z*-3.15);
-			glVertex3d(-0.20, x_y*0.2+x_offset, x_z*0.35); 	//v0
-			glVertex3d(-0.20, x_y*0.2, x_z*0.35); 	//v0
-			glVertex3d(-1.80, x_y*0.2, x_z*0.35);		//v1
-			glVertex3d(-1.80, x_y*0.2+x_offset, x_z*0.35);		//v1
+			//Draw Lazers
+			cylinder(-0.10,x_y*(0.85+r_coil)+trans,x_z*(wingspan-0.12), 
+						l_coil,r_coil,r_coil, 0);
 			
-			glNormal3f(-3.3,x_y*1.67,x_z*0.32);
-			glVertex3d(-1.80, x_y*0.2+x_offset, x_z*0.35);		//v1
-			glVertex3d(-1.80, x_y*0.2, x_z*0.35);		//v1			
-			glVertex3d(-1.50, x_y*0.80, x_z*wingspan);		//v2			
-			glVertex3d(-1.50, x_y*0.80+x_offset, x_z*wingspan);		//v2
+			cylinder(-0.10,x_y*(0.90+r_focus)+trans,x_z*(wingspan-0.12), 
+						l_focus,r_focus,r_focus, 0);
+		}else{
+			glBegin(GL_QUADS);	
+			glColor3f(0.8,0,0);
+				//bottom part of wing (from front)
+				glNormal3f(0,-x_y,0);
+				glVertex3d(-0.20, x_y*0.10+trans, x_z*0.35); 	//v0
+				glVertex3d(-1.80, x_y*0.10+trans, x_z*0.35);		//v1
+				glVertex3d(-1.30, x_y*0.10+trans, x_z*wingspan);		//v2
+				glVertex3d(-0.20, x_y*0.10+trans, x_z*wingspan);		//v3
+				
+				//top part of wing (from front)
+				glNormal3f(0,x_y,0);
+				glVertex3d(-0.20, x_y*0.01+x_offset+trans, x_z*0.35); 	//v0
+				glVertex3d(-1.80, x_y*0.01+x_offset+trans, x_z*0.35);		//v1
+				glVertex3d(-1.30, x_y*0.01+x_offset+trans, x_z*wingspan);		//v2
+				glVertex3d(-0.20, x_y*0.01+x_offset+trans, x_z*wingspan);		//v3
+				
+				//Connect Parts
+				glColor3f(0,0,0.8);
+				glNormal3f(0,0,x_z*-3.15);
+				glVertex3d(-0.20, x_y*0.01+x_offset+trans, x_z*0.35); 	//v0
+				glVertex3d(-0.20, x_y*0.01+trans, x_z*0.35); 	//v0
+				glVertex3d(-1.80, x_y*0.01+trans, x_z*0.35);		//v1
+				glVertex3d(-1.80, x_y*0.01+x_offset+trans, x_z*0.35);		//v1
+
+				glNormal3f(-3.3,0,x_z*0.32);
+				glVertex3d(-1.80, x_y*0.01+x_offset+trans, x_z*0.35);		//v1
+				glVertex3d(-1.80, x_y*0.01+trans, x_z*0.35);		//v1			
+				glVertex3d(-1.30, x_y*0.01+trans, x_z*wingspan);		//v2			
+				glVertex3d(-1.30, x_y*0.01+x_offset+trans, x_z*wingspan);		//v2
+
+				glNormal3f(0,0,x_z*3.15);	
+				glVertex3d(-1.30, x_y*0.01+x_offset+trans, x_z*wingspan);		//v2
+				glVertex3d(-1.30, x_y*0.01+trans, x_z*wingspan);		//v2
+				glVertex3d(-0.20, x_y*0.01+trans, x_z*wingspan);		//v3
+				glVertex3d(-0.20, x_y*0.01+x_offset+trans, x_z*wingspan);		//v3
 			
-			glNormal3f(0,x_y*0.6,x_z*3.15);	
-			glVertex3d(-1.50, x_y*0.80+x_offset, x_z*wingspan);		//v2
-			glVertex3d(-1.50, x_y*0.80, x_z*wingspan);		//v2
-			glVertex3d(-0.50, x_y*0.80, x_z*wingspan);		//v3
-			glVertex3d(-0.50, x_y*0.80+x_offset, x_z*wingspan);		//v3
+				glNormal3f(1,0,0);
+				glVertex3d(-0.20, x_y*0.01+x_offset+trans, x_z*wingspan);		//v3			
+				glVertex3d(-0.20, x_y*0.01+trans, x_z*wingspan);		//v3			
+				glVertex3d(-0.20, x_y*0.01+trans, x_z*0.35); 	//v0	
+				glVertex3d(-0.20, x_y*0.01+x_offset+trans, x_z*0.35); 	//v0	
+			glEnd();
 			
-			glNormal3f(1,0,0);
-			glVertex3d(-0.50, x_y*0.80+x_offset, x_z*wingspan);		//v3			
-			glVertex3d(-0.50, x_y*0.80, x_z*wingspan);		//v3			
-			glVertex3d(-0.20, x_y*0.2, x_z*0.35); 	//v0	
-			glVertex3d(-0.20, x_y*0.2+x_offset, x_z*0.35); 	//v0	
-		glEnd();
-	}else{
-		glBegin(GL_QUADS);	
-		glColor3f(0.8,0,0);
-			//bottom part of wing (from front)
-			glNormal3f(0,-x_y,0);
-			glVertex3d(-0.20, x_y*0.20, x_z*0.35); 	//v0
-			glVertex3d(-1.80, x_y*0.20, x_z*0.35);		//v1
-			glVertex3d(-1.50, x_y*0.20, x_z*wingspan);		//v2
-			glVertex3d(-0.50, x_y*0.20, x_z*wingspan);		//v3
-			
-			//top part of wing (from front)
-			glNormal3f(0,x_y,0);
-			glVertex3d(-0.20, x_y*0.20+x_offset, x_z*0.35); 	//v0
-			glVertex3d(-1.80, x_y*0.20+x_offset, x_z*0.35);		//v1
-			glVertex3d(-1.50, x_y*0.20+x_offset, x_z*wingspan);		//v2
-			glVertex3d(-0.50, x_y*0.20+x_offset, x_z*wingspan);		//v3
-			
-			//Connect Parts
-			glColor3f(0,0,0.8);
-			glNormal3f(0,0,x_z*-3.15);
-			glVertex3d(-0.20, x_y*0.20+x_offset, x_z*0.35); 	//v0
-			glVertex3d(-0.20, x_y*0.20, x_z*0.35); 	//v0
-			glVertex3d(-1.80, x_y*0.20, x_z*0.35);		//v1
-			glVertex3d(-1.80, x_y*0.20+x_offset, x_z*0.35);		//v1
-			
-			glNormal3f(-3.3,0,x_z*0.32);
-			glVertex3d(-1.80, x_y*0.20+x_offset, x_z*0.35);		//v1
-			glVertex3d(-1.80, x_y*0.20, x_z*0.35);		//v1			
-			glVertex3d(-1.50, x_y*0.20, x_z*wingspan);		//v2			
-			glVertex3d(-1.50, x_y*0.20+x_offset, x_z*wingspan);		//v2
-			
-			glNormal3f(0,0,x_z*3.15);	
-			glVertex3d(-1.50, x_y*0.20+x_offset, x_z*wingspan);		//v2
-			glVertex3d(-1.50, x_y*0.20, x_z*wingspan);		//v2
-			glVertex3d(-0.50, x_y*0.20, x_z*wingspan);		//v3
-			glVertex3d(-0.50, x_y*0.20+x_offset, x_z*wingspan);		//v3
-			
-			glNormal3f(1,0,0);
-			glVertex3d(-0.50, x_y*0.20+x_offset, x_z*wingspan);		//v3			
-			glVertex3d(-0.50, x_y*0.20, x_z*wingspan);		//v3			
-			glVertex3d(-0.20, x_y*0.20, x_z*0.35); 	//v0	
-			glVertex3d(-0.20, x_y*0.20+x_offset, x_z*0.35); 	//v0	
-		glEnd();	
+			//Draw Engines
+			cylinder(-0.10,x_y*(0.01+intakeRadius)+trans,x_z*0.7, intakeLength,intakeRadius,intakeRadius, 0);
+		}
 	}
 }
 
@@ -373,10 +403,7 @@ static void xWing(	double x, double y, double z,
 	glScaled(scale,scale,scale);
 	glMultMatrixd(mat);
 
-	xWingFoils(x_foils, wingspan, 0);
-	xWingFoils(x_foils, wingspan, 1);
-	xWingFoils(x_foils, wingspan, 2);
-	xWingFoils(x_foils, wingspan, 3);
+	xWingFoils(x_foils, wingspan);
 	 
 	// Draw Nose
 	glColor3f(0.745,0.745,0.745);
@@ -463,7 +490,7 @@ static void xWing(	double x, double y, double z,
 	glEnd();
 	
 	//Cockpit base
-	cube(-1, 0.05, 0, 1, 0.4, 0.4,0);
+	cube(-1,0.05,0, 1,0.4,0.4, 0);
 	
 	//Cockpit
 	glColor3f(0,0,1);
@@ -546,15 +573,14 @@ static void tieFighter(	double x, double y, double z,
 
 	//Wings
 	//Right
+	glColor3f(0.6,0.6,0.6);
 	tieWings(wingRad, wingspan, 0.1);
 	//Left
 	tieWings(wingRad, -wingspan, -0.1);
-	
-	//FIX THIS
+
 	//Cockpit
 	glScaled(0.9, 0.9, 0.9);
-	sphere(textures.tieBody);
-
+	sphere(textures.tieBody, 0);
 	
 	//Arms to wings
 	glBegin(GL_QUADS);
@@ -674,13 +700,14 @@ void display()
         
         lightsOn(Ambient, Diffuse, Specular, Position);
 	}
-	else
+	else{
 		glDisable(GL_LIGHTING);
-     
-	xWing(-8,0,0, 1,0,0, 0,1,1, 1);
+    }
+         
+	xWing(-8,0,0, 1,0,0, 0,1,1, 1.15);
 	tieFighter(8,0,0, 1,0.5,0, 0,0,1, 1);
 	//tieFighter(0,0,0, 1,0,0, 0,1,0, 1);
-	xWing(4,-10,-15, 0.1,0.1,0.1, 0,1,-1, 1);	
+	xWing(4,-10,-15, 0.1,0.1,0.1, 0,1,-1, 1.15);	
 	tieFighter(-27,+5,-4, 1,0,0, (20/35), -0.25, 0.1, 1);
 	
 	asteroidField(N, SPREAD);

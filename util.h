@@ -4,15 +4,19 @@
 #define LEN 8192  //  Maximum length of text string
 int local = 0;  // Local Viewer Model
 
-static void Vertex(int th, int ph, double r, double g, double b)
+double randRange(double min, double max) {
+   return rand() * (max - min) / RAND_MAX + min;
+}
+
+static void Vertex(int th, int ph)
 {
-   glColor3f(r, g, b);
-   double x = -Sin(th)*Cos(ph);
-   double y =  Cos(th)*Cos(ph);
-   double z =          Sin(ph);
-   glNormal3d(x,y,z);
-   glTexCoord2d(th/360.0,ph/180.0+0.5);
-   glVertex3d(x,y,z);
+   double x,y,z;
+	x = -Sin(th)*Cos(ph);
+	y =  Cos(th)*Cos(ph);
+	z =          Sin(ph);
+	glNormal3f(x,y,z);
+	glTexCoord2d(th/360.0,ph/180.0+0.5);
+	glVertex3f(x,y,z);
 }
 
 void Print(const char* format , ...)
@@ -29,8 +33,60 @@ void Print(const char* format , ...)
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*ch++);
 }
 
+//Draw a unit cylinder, and scale accordingly.
+static void cylinder(double x,double y,double z,
+					 double dx,double dy,double dz, double th)
+{
+	double radius = 1.0;
+	int i;
+	int sections = 40; //number of triangles to use to estimate a circle
+					  // (a higher number yields a more perfect circle)
+	
+	GLfloat twoPi = 2.0 * 3.14159;
+
+	//  Save transformation
+	glPushMatrix();
+	//  Offset
+	glTranslated(x,y,z);
+	glRotated(th,0,1,0);
+	glScaled(dx,dy,dz);
+	
+	//Front Face
+	glColor3f(0.7,0.7,0.7);
+	glNormal3f(-1,0,0);
+	glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(0,0,0); // origin
+		for(i = 0; i <= sections;i++) { // make section number of circles
+			glVertex3f(0, radius * cos(i *  twoPi / sections), 
+						radius* sin(i * twoPi / sections));
+		}
+	glEnd();
+
+	//Back Face
+	glNormal3f(1,0,0);
+	glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(1,0,0); // origin
+		for(i = 0; i <= sections;i++) { // make section number of circles
+		   glVertex3f(1, (radius * cos(i *  twoPi / sections)), 
+						(radius* sin(i * twoPi / sections)));
+		}
+	glEnd();
+	
+	glBegin(GL_QUAD_STRIP);
+		for(i = 0; i <= sections;i++) { // make section number of circles
+			glNormal3f(0, (radius * cos(i *  twoPi / sections)), 
+						(radius* sin(i * twoPi / sections)));			
+			glVertex3f(0, (radius * cos(i *  twoPi / sections)), 
+						(radius* sin(i * twoPi / sections)));
+			glVertex3f(1, (radius * cos(i *  twoPi / sections)), 
+						(radius* sin(i * twoPi / sections)));
+		}
+	glEnd();
+	
+	glPopMatrix();
+}
 //Draws a sphere!
-static void sphere(int texture)
+static void sphere(int texture, int ast)
 {
 	int th,ph;
 	//  Set texture 
@@ -45,8 +101,8 @@ static void sphere(int texture)
 	  glBegin(GL_QUAD_STRIP);
 	  for (th=0;th<=360;th+=5)
 	  {
-		 Vertex(th,ph, 1,1,1);
-		 Vertex(th,ph+5, 1,1,1);
+		 Vertex(th,ph);
+		 Vertex(th,ph+5);
 	  }
 	  glEnd();
 	}
@@ -143,8 +199,8 @@ static void lightBall(float Position[4])
       glBegin(GL_QUAD_STRIP);
       for (th=0;th<=360;th+=d)
       {
-         Vertex(th,ph, 1, 1, 1);
-         Vertex(th,ph+d, 1, 1, 1);
+         Vertex(th,ph);
+         Vertex(th,ph+d);
       }
       glEnd();
    }
