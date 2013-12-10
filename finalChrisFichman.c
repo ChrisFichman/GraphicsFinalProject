@@ -52,25 +52,24 @@ float shinyvec[1];    // Shininess (value)
 int zh        =  90;  // Light azimuth
 float ylight  =   0;  // Elevation of light 
 
+Tracker track;
 AField field;
 Textures textures;
 
 static void asteroidField(int n, int spread)
 {
 	int k;
-	
+
 	for(k = 0; k < n; k++){
 		//  Save transformation	
-		glPushMatrix();	
-		glRotated(field.asteroids[k].rot, 1,1,0);
-		glTranslated(field.asteroids[k].x, field.asteroids[k].y, field.asteroids[k].z);
-		glScaled(field.asteroids[k].r, field.asteroids[k].r, field.asteroids[k].r);
-		
+		glPushMatrix();
+		glTranslated(field.asteroids[k].x, 
+					 field.asteroids[k].y, 
+					 field.asteroids[k].z);
 		if (k>0 && light) glEnable(GL_LIGHTING); //  Lighting for planets
 		
 		//sphere(textures.asteroid, 1);
 		drawAsteroid(&field, textures.asteroid, k);
-		
 		glPopMatrix();
 	}
 }

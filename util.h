@@ -2,7 +2,22 @@
 // This file includes basic shapes and utility functions
 #include "CSCIx229.h"
 #define LEN 8192  //  Maximum length of text string
+#define MAX_OBJS 120
 int local = 0;  // Local Viewer Model
+
+
+typedef struct Object{
+	char* ObjID[4];			//Tracks Object (up to 4 letters long, for tag and number)
+	double x,y,z;			//Current Position
+	double v_x, v_y, v_z;	//Velocity vectors
+	double radius;			//Size of bounding box
+	int collision; 			//Has this object collided with another?
+}Object;
+
+
+typedef struct Tracker{
+	Object objects[MAX_OBJS];
+} Tracker;
 
 double randRange(double min, double max) {
    return rand() * (max - min) / RAND_MAX + min;
@@ -229,3 +244,4 @@ void lightsOn(float Ambient[], float Diffuse[], float Specular[], float Position
 	glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
 	glLightfv(GL_LIGHT0,GL_POSITION,Position);
 }
+
