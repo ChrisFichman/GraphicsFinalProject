@@ -2,7 +2,7 @@
 #include "CSCIx229.h"
 #include "util.h"
 #define N 200
-#define SPREAD 80
+#define SPREAD 50
 
 typedef struct Asteroid{
 	double r, x, y, z;
@@ -25,10 +25,11 @@ void initAPoint(Asteroid *asteroid){
 		asteroid->rad[i][0] = randRange(0.9, 2.0);
 		asteroid->rad[i][1] = randRange(0.9, 2.0);
 		
-		for(j = 2; j<19; j++){
+		for(j = 2; j<18; j++){
 			current = randRange(0.9, 2.0);
 			asteroid->rad[i][j] = (current+asteroid->rad[i][j-1]+asteroid->rad[i][j-2])/3;
 		}
+		asteroid->rad[i][18] = asteroid->rad[i][0];
 	}
 }
 void initAField(AField *field){
@@ -98,21 +99,6 @@ void drawAsteroid(AField *field, int texture, int i){
 				
 				k++;
 			}
-			x = -Sin(th)*Cos(ph)*(field->asteroids[i].rad[0][0]);
-			y =  Cos(th)*Cos(ph)*(field->asteroids[i].rad[0][0]);
-			z =          Sin(ph)*(field->asteroids[i].rad[0][0]);
-
-			glNormal3f(x,y,z);
-			glTexCoord2d(th/360.0,ph/180.0+0.5);
-			glVertex3f(x,y,z);
-						
-			x = -Sin(th)*Cos(ph+20)*(field->asteroids[i].rad[1][0]);
-			y =  Cos(th)*Cos(ph+20)*(field->asteroids[i].rad[1][0]);
-			z =          Sin(ph+20)*(field->asteroids[i].rad[1][0]);
-
-			glNormal3f(x,y,z);
-			glTexCoord2d(th/360.0,(ph+20)/180.0+0.5);
-			glVertex3f(x,y,z);
 			
 			j++;
 		glEnd();

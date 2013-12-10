@@ -408,6 +408,7 @@ static void xWing(	double x, double y, double z,
 	//  Save current transforms
 	glPushMatrix();
 	//  Offset, scale and rotate
+	x = x+dx;
 	glTranslated(x,y,z);
 	glScaled(scale,scale,scale);
 	glMultMatrixd(mat);
@@ -712,7 +713,6 @@ void display()
 	else{
 		glDisable(GL_LIGHTING);
     }
-         
 	xWing(-8,0,0, 1,0,0, 0,1,1, 1.15);
 	tieFighter(8,0,0, 1,0.5,0, 0,0,1, 1);
 	//tieFighter(0,0,0, 1,0,0, 0,1,0, 1);
